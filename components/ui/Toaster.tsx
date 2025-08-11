@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 
 import { LogoLoader } from "../icons";
-import ThemeSwitcher, { ThemeSelector } from "./ThemeSelector";
+import ThemeSwitcher from "./ThemeSelector";
 
 // Enhanced Types with More Creativity
 type ToastVariant =

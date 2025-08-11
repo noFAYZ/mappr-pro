@@ -6,14 +6,27 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "next-themes";
 import { useState, useEffect } from "react";
 import { ToastProvider } from "@/components/ui/Toaster";
-import { themes } from "@/lib/themes";
+import { AuthStatus } from "@/components/auth/AuthStatus";
+import AuthProvider from "./AuthProvider";
 
-// Create a stable query client instance
+// Create query client with optimized settings
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000, // 1 minute
+      gcTime: 5 * 60 * 1000, // 5 minutes
       refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      retry: (failureCount, error: any) => {
+        // Don't retry auth errors
+        if (error?.status === 401 || error?.status === 403) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+    mutations: {
+      retry: false,
     },
   },
 });
@@ -26,7 +39,6 @@ export function Providers({ children }: ProvidersProps) {
   const [queryClient] = useState(() => createQueryClient());
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -43,15 +55,17 @@ export function Providers({ children }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="minimal"
-        
+        defaultTheme="light"
+        enableSystem
         disableTransitionOnChange={false}
-        themes={Object.keys(themes)}
-        value={themes}
       >
         <HeroUIProvider>
           <ToastProvider>
-            {children}
+            <AuthProvider>
+              <AuthStatus>
+                {children}
+              </AuthStatus>
+            </AuthProvider>
           </ToastProvider>
         </HeroUIProvider>
       </ThemeProvider>
