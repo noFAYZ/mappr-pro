@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 
 import { LogoLoader } from "../icons";
+import ThemeSwitcher, { ThemeSelector } from "./ThemeSelector";
 
 // Enhanced Types with More Creativity
 type ToastVariant =
@@ -780,7 +781,7 @@ const ToastItem: React.FC<{
     >
       <Card
         className={`
-          dark:bg-content3-dark
+         
          rounded-2xl  
           ${toast.variant === "premium" || toast.variant === "achievement" ? "shadow-2xl" : ""}
           ${toast.priority === "urgent" ? "ring-2 ring-danger-400 ring-opacity-75" : ""}
@@ -1451,6 +1452,8 @@ const ToastDemo: React.FC = () => {
             >
               ✨
             </motion.div>
+
+            <ThemeSwitcher />
           </div>
 
           <p className="text-xl text-default-600 mb-6 max-w-3xl mx-auto">
